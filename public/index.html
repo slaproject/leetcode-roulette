@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LeetCode Roulette</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      label { font-weight: 600; }
+      select, button { padding: 8px 10px; font-size: 14px; }
+      .card { margin-top: 20px; border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+      .muted { color: #666; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <h1>LeetCode Roulette</h1>
+    <div class="row">
+      <label for="difficulty">Difficulty</label>
+      <select id="difficulty">
+        <option value="">Any</option>
+        <option>Easy</option>
+        <option>Medium</option>
+        <option>Hard</option>
+      </select>
+
+      <label for="tag">Topic</label>
+      <select id="tag">
+        <option value="">Any</option>
+      </select>
+
+      <label><input type="checkbox" id="exclude-paid" /> Exclude Paid</label>
+      <button id="spin">Spin</button>
+    </div>
+
+    <div class="muted" id="stats"></div>
+
+    <div id="result" class="card" style="display:none;"></div>
+
+    <script>
+      const difficultyEl = document.getElementById('difficulty');
+      const tagEl = document.getElementById('tag');
+      const excludePaidEl = document.getElementById('exclude-paid');
+      const spinEl = document.getElementById('spin');
+      const resultEl = document.getElementById('result');
+      const statsEl = document.getElementById('stats');
+
+      async function loadMeta() {
+        const res = await fetch('/api/meta');
+        const data = await res.json();
+        statsEl.textContent = `Loaded ${data.total} questions.`;
+        for (const t of data.tags) {
+          const opt = document.createElement('option');
+          opt.value = t; opt.textContent = t;
+          tagEl.appendChild(opt);
+        }
+      }
+
+      async function spin() {
+        const params = new URLSearchParams();
+        if (difficultyEl.value) params.set('difficulty', difficultyEl.value);
+        if (tagEl.value) params.set('tag', tagEl.value);
+        params.set('excludePaid', String(excludePaidEl.checked));
+        const res = await fetch('/api/roulette?' + params.toString());
+        const data = await res.json();
+        if (!data.question) {
+          resultEl.style.display = 'block';
+          resultEl.innerHTML = '<b>No question found for these filters.</b>';
+          return;
+        }
+        const q = data.question;
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:18px;font-weight:700;">#${q.id} · ${q.title}</div>
+              <div class="muted">${q.difficulty} · ${q.topicTags.join(', ')}</div>
+            </div>
+            <a href="${data.link}" target="_blank">
+              <button>Open on LeetCode</button>
+            </a>
+          </div>
+        `;
+      }
+
+      spinEl.addEventListener('click', spin);
+      loadMeta();
+    </script>
+  </body>
+  </html>
+
+

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <!-- Simplified LeetCode-style mark (not trademark exact) -->
+  <path d="M156 44L92 108l40 40-40 40" stroke="#f59e0b" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M172 92a48 48 0 110 72" stroke="#e5e7eb" stroke-opacity="0.9" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="168" cy="128" r="8" fill="#f59e0b"/>
+</svg>
+
