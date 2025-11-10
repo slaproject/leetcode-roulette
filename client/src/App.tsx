@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
@@ -15,6 +16,7 @@ type Question = {
   difficulty: string;
   topicTags: string[];
   paidOnly: boolean;
+  rating?: number | null;
 };
 
 export default function App() {
@@ -22,6 +24,9 @@ export default function App() {
   const [difficulty, setDifficulty] = useState<string>('');
   const [tag, setTag] = useState<string>('');
   const [excludePaid, setExcludePaid] = useState<boolean>(false);
+  const [minRating, setMinRating] = useState<string>('');
+  const [maxRating, setMaxRating] = useState<string>('');
+  const [includeUnrated, setIncludeUnrated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<{ count: number; question: Question | null; link?: string } | null>(null);
 
@@ -39,6 +44,9 @@ export default function App() {
       if (difficulty) params.set('difficulty', difficulty);
       if (tag) params.set('tag', tag);
       params.set('excludePaid', String(excludePaid));
+      if (minRating) params.set('minRating', minRating);
+      if (maxRating) params.set('maxRating', maxRating);
+      if (includeUnrated) params.set('includeUnrated', 'true');
       const res = await fetch('/api/roulette?' + params.toString());
       const data = await res.json();
       setResult(data);
@@ -105,6 +113,85 @@ export default function App() {
           </div>
           </section>
 
+          {/* Rating Range Section */}
+          {/* <section className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div className="flex flex-col gap-1 w-full">
+              <label className="text-sm font-medium">Min Rating</label>
+              <input
+                type="number"
+                className="w-full border border-slate-700 bg-slate-900 rounded-md px-2 py-2"
+                placeholder="e.g. 2000"
+                value={minRating}
+                onChange={e => setMinRating(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full">
+              <label className="text-sm font-medium">Max Rating</label>
+              <input
+                type="number"
+                className="w-full border border-slate-700 bg-slate-900 rounded-md px-2 py-2"
+                placeholder="e.g. 3000"
+                value={maxRating}
+                onChange={e => setMaxRating(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center justify-center gap-3 w-full">
+              <span className="text-sm text-slate-300">Include Unrated</span>
+              <label htmlFor="include-unrated" className="relative inline-flex items-center cursor-pointer select-none">
+                <input
+                  id="include-unrated"
+                  type="checkbox"
+                  checked={includeUnrated}
+                  onChange={e => setIncludeUnrated(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <span className="block h-6 w-11 rounded-full bg-slate-700/80 ring-1 ring-inset ring-slate-600/60 transition-colors peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-cyan-400"></span>
+                <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-slate-200 shadow-sm transition-transform peer-checked:translate-x-5"></span>
+              </label>
+            </div>
+          </section> */}
+           <section className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+            <div className="flex flex-col gap-1 w-full">
+              <label className="text-sm font-medium">Min Rating</label>
+              <input
+                type="number"
+                className="w-full border border-slate-700 bg-slate-900 rounded-md px-2 py-2"
+                placeholder="e.g. 2000"
+                value={minRating}
+                onChange={e => setMinRating(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full">
+              <label className="text-sm font-medium">Max Rating</label>
+              <input
+                type="number"
+                className="w-full border border-slate-700 bg-slate-900 rounded-md px-2 py-2"
+                placeholder="e.g. 3000"
+                value={maxRating}
+                onChange={e => setMaxRating(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center justify-center gap-3 w-full">
+              <span className="text-sm text-slate-300">Include Unrated</span>
+              <label htmlFor="include-unrated" className="relative inline-flex items-center cursor-pointer select-none">
+                <input
+                  id="include-unrated"
+                  type="checkbox"
+                  checked={includeUnrated}
+                  onChange={e => setIncludeUnrated(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <span className="block h-6 w-11 rounded-full bg-slate-700/80 ring-1 ring-inset ring-slate-600/60 transition-colors peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-cyan-400"></span>
+                <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-slate-200 shadow-sm transition-transform peer-checked:translate-x-5"></span>
+              </label>
+            </div>
+          </section>
+          {(minRating || maxRating) && !includeUnrated && (
+            <div className="text-xs text-amber-400 text-center">
+              ⚠️ Only questions with ratings will be shown. Enable "Include Unrated" to see all questions.
+            </div>
+          )}
+
           <div className="mx-auto flex items-center justify-center gap-3">
             <Button
               onClick={spin}
@@ -153,6 +240,11 @@ export default function App() {
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-300">
                         {result.question.difficulty}
                       </span>
+                      {result.question.rating !== null && result.question.rating !== undefined && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-purple-400/30 bg-purple-500/10 text-purple-300">
+                          Rating: {Math.round(result.question.rating)}
+                        </span>
+                      )}
                       {result.question.topicTags.map(tt => (
                         <span key={tt} className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-200 border border-slate-700/70">{tt}</span>
                       ))}
