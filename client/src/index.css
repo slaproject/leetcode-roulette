@@ -3,13 +3,20 @@
 @tailwind utilities;
 
 /* Dark theme base */
-html, body, #root {
-  height: 100%;
+html {
+  min-height: 100%;
+  height: auto;
 }
+
+body, #root {
+  min-height: 100%;
+  height: auto;
+}
+
 body {
   @apply bg-slate-900 text-slate-100;
-  overflow: hidden;
-  overscroll-behavior: none;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 :root {
@@ -43,8 +50,75 @@ body {
   background-image: url('/bg-mesh.svg');
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
-  background-position: center top;
+  background-position: center center;
+  background-attachment: scroll;
+  /* Ensure background scales with body height as content grows */
+  background-clip: border-box;
+}
+
+/* Mobile: Optimize background for mobile screens - scales dynamically with content */
+@media (max-width: 767px) {
+  body {
+    /* Cover ensures background scales to fill viewport and content area */
+    background-size: cover;
+    background-position: center top;
+    background-attachment: scroll;
+    /* Body extends with content, background scales to cover it */
+    min-height: 100vh;
+    height: auto;
+  }
+  
+  html {
+    min-height: 100vh;
+    height: auto;
+  }
+}
+
+/* Small tablets: Scales with screen size and content */
+@media (min-width: 768px) and (max-width: 1023px) {
+  body {
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+    /* Ensure background covers full content height */
+    min-height: 100vh;
+    height: auto;
+  }
+}
+
+/* Desktop: Fixed attachment for parallax, but scales to viewport dimensions */
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center center;
+    /* Fixed attachment covers viewport, scales with viewport size */
+    min-height: 100vh;
+  }
+}
+
+/* Large screens: Ensure background scales appropriately for wide displays */
+@media (min-width: 1920px) {
+  body {
+    background-size: cover;
+    /* Maintains aspect ratio while covering entire viewport */
+  }
+}
+
+/* Portrait orientation on mobile: Optimize for taller screens */
+@media (max-width: 767px) and (orientation: portrait) {
+  body {
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
+/* Landscape orientation on mobile: Optimize for wider screens */
+@media (max-width: 767px) and (orientation: landscape) {
+  body {
+    background-size: cover;
+    background-position: center center;
+  }
 }
 
 /* Brand heading font */
