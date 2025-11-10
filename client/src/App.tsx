@@ -57,7 +57,7 @@ export default function App() {
           </a>
           <div className="flex items-center gap-4">
             <a href="https://leetcode.com" target="_blank" className="text-base text-blue-300 hover:text-blue-200">LeetCode</a>
-            <a href="https://github.com/" target="_blank" className="text-base text-slate-300 hover:text-white/90">GitHub</a>
+            <a href="https://github.com/slaproject/leetcode-roulette" target="_blank" className="text-base text-slate-300 hover:text-white/90">GitHub</a>
           </div>
         </div>
       </nav>
